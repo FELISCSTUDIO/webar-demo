@@ -55,7 +55,7 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: calc(var(--vh) * 5); /* ✅ 用動態 vh 控制，永遠浮在畫面內 */
+        bottom: calc(var(--vh) * 5 + 60px); /* 保留 5% 空間，再加 60px 外框高度 */
         background: rgba(0,0,0,0.6);
         color: #fff;
         padding: 10px 20px;
@@ -110,7 +110,7 @@
     </svg>
 
     <!-- 提示文字 -->
-    <div id="hint">請將鏡頭對準 Hiro 標記</div>
+    <div id="hint">捲捲公主請上車</div>
 
     <!-- AR 場景 -->
     <a-scene
