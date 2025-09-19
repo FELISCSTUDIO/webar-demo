@@ -2,14 +2,19 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
-    <title>WebAR with Smooth + Delay Hide + VH Fix</title>
+    <title>WebAR with Smooth + Delay Hide</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
+      :root {
+        --vh: 1vh; /* 動態視窗高度單位 */
+      }
+
       body {
         margin: 0;
         overflow: hidden;
         font-family: "Microsoft JhengHei", sans-serif;
+        height: calc(var(--vh) * 100); /* ✅ 使用修正後的 vh 高度 */
       }
 
       /* Loading 畫面 */
@@ -18,7 +23,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: calc(var(--vh, 1vh) * 100); /* ✅ 用修正後 vh */
+        height: calc(var(--vh) * 100); /* ✅ 修正高度 */
         background: linear-gradient(135deg, #4facfe, #00f2fe);
         display: flex;
         justify-content: center;
@@ -48,15 +53,15 @@
       /* 提示文字 */
       #hint {
         position: fixed;
-        bottom: 40px;
         left: 50%;
         transform: translateX(-50%);
+        bottom: calc(var(--vh) * 5); /* ✅ 用動態 vh 控制，永遠浮在畫面內 */
         background: rgba(0,0,0,0.6);
         color: #fff;
         padding: 10px 20px;
         border-radius: 8px;
         font-size: 1.1em;
-        z-index: 2000;
+        z-index: 2000; 
         animation: fadeInOut 3s ease-in-out infinite;
       }
 
@@ -70,9 +75,9 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: calc(var(--vh, 1vh) * 100); /* ✅ 用修正後 vh */
-        z-index: 500;
+        width: 100vw;
+        height: calc(var(--vh) * 100); /* ✅ 修正高度 */
+        z-index: 500;   
         pointer-events: none;
       }
     </style>
@@ -86,21 +91,32 @@
 
     <!-- SVG 外框 -->
     <svg id="frame-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 285.75 508" preserveAspectRatio="none">
-      <g>
-        <rect style="fill:#ffd5d5;" width="287.49" height="50.92" x="-1.68" y="-1.12" />
-        <rect style="fill:#ffd5d5;" width="287.49" height="50.92" x="-0.70" y="458.04" />
-        <rect style="fill:#ff8080;" width="154.7" height="51.9" x="67.18" y="428.06" />
-        <text style="font-size:32px;fill:#ffd4d4;" x="87" y="442">捲捲可愛</text>
+      <g id="layer1">
+        <rect style="fill:#ffd5d5;" width="287.5" height="50.9" x="-1.7" y="-1.1" />
+        <rect style="fill:#ffd5d5;" width="287.5" height="50.9" x="-0.7" y="458" />
+        <rect style="fill:#ffd5d5;" width="494.8" height="40.2" x="9.5" y="-285.5"
+              transform="matrix(0.00105,0.999999,-0.999995,0.003112,0,0)" />
+        <rect style="fill:#ffd5d5;" width="494.8" height="40.2" x="10.5" y="-40"
+              transform="matrix(0.00105,0.999999,-0.999995,0.003112,0,0)" />
+        <rect style="fill:#ff8080;" width="154.7" height="51.9" x="67.2" y="428" />
+        <text style="font-size:32px;fill:#ffd4d4;"
+              x="87" y="442" transform="scale(0.95,1.06)">捲捲可愛</text>
+        <rect style="fill:#ff8080;" width="4.25" height="424.4" x="248.3" y="41.8" />
+        <rect style="fill:#ff8080;" width="4.25" height="424.4" x="33" y="41.2" />
+        <rect style="fill:#ff8080;" width="219.3" height="6.36" x="33.2" y="40.3" />
+        <rect style="fill:#ff8080;" width="32.9" height="6.36" x="219.3" y="461.5" />
+        <rect style="fill:#ff8080;" width="35.3" height="6.36" x="33.2" y="461.6" />
       </g>
     </svg>
 
     <!-- 提示文字 -->
-    <div id="hint">捲捲胖胖</div>
+    <div id="hint">請將鏡頭對準 Hiro 標記</div>
 
     <!-- AR 場景 -->
     <a-scene
       embedded
       arjs="trackingMethod: best; sourceType: webcam; detectionMode: mono_and_matrix;"
+      style="height: calc(var(--vh) * 100);"
     >
       <!-- Marker -->
       <a-marker
@@ -129,19 +145,18 @@
     </a-scene>
 
     <script>
+      // ✅ 動態 vh 設定，避免被瀏覽器工具列擋住
+      function setVh() {
+        document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
+      }
+      window.addEventListener('resize', setVh);
+      window.addEventListener('orientationchange', setVh);
+      setVh();
+
       const marker = document.querySelector('#hiroMarker');
       const model = document.querySelector('#treeModel');
       const loadingScreen = document.querySelector('#loading-screen');
       let hideTimeout;
-
-      // ✅ vh 修正
-      function setVH() {
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-      }
-      window.addEventListener('resize', setVH);
-      window.addEventListener('orientationchange', setVH);
-      setVH(); // 初始執行一次
 
       // 一開始隱藏模型
       model.setAttribute('visible', false);
