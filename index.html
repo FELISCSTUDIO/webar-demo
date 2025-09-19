@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
   <head>
+    <meta charset="utf-8" />
     <title>WebAR with Smooth + Delay Hide</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
@@ -55,13 +56,24 @@
         padding: 10px 20px;
         border-radius: 8px;
         font-size: 1.1em;
-        z-index: 999;
+        z-index: 900; /* 在 SVG 下層 */
         animation: fadeInOut 3s ease-in-out infinite;
       }
 
       @keyframes fadeInOut {
         0%, 100% { opacity: 1; }
         50% { opacity: 0.5; }
+      }
+
+      /* SVG 外框層 */
+      #frame-svg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 950; /* 在提示文字之上，但在 loading 之下 */
+        pointer-events: none; /* 不影響點擊操作 */
       }
     </style>
   </head>
@@ -72,14 +84,18 @@
       <div>正在載入 3D 模型，請稍候...</div>
     </div>
 
+    <!-- SVG 外框 (從 GitHub 載入) -->
+    <object id="frame-svg" type="image/svg+xml" data="BG/BG.svg"></object>
+
     <!-- 提示文字 -->
     <div id="hint">捲捲胖胖</div>
 
+    <!-- AR 場景 -->
     <a-scene
       embedded
       arjs="trackingMethod: best; sourceType: webcam; detectionMode: mono_and_matrix;"
     >
-      <!-- Hiro marker with smooth settings -->
+      <!-- Marker -->
       <a-marker
         preset="hiro"
         emitevents="true"
@@ -111,16 +127,17 @@
       const loadingScreen = document.querySelector('#loading-screen');
       let hideTimeout;
 
-      // 一開始隱藏模型
+      // ✅ 一開始隱藏模型
       model.setAttribute('visible', false);
 
-      // 模型載入完成後 -> 關閉 Loading 畫面
+      // ✅ 模型載入完成後 -> 關閉 Loading 畫面
       model.addEventListener("model-loaded", () => {
         console.log("模型載入完成");
         loadingScreen.style.opacity = "0";
         setTimeout(() => loadingScreen.style.display = "none", 600);
       });
 
+      // ✅ 顯示模型
       function showModel() {
         clearTimeout(hideTimeout);
         if (!model.getAttribute('visible')) {
@@ -129,6 +146,7 @@
         }
       }
 
+      // ✅ 隱藏模型
       function hideModel() {
         if (model.getAttribute('visible')) {
           model.setAttribute('visible', false);
@@ -136,16 +154,12 @@
         }
       }
 
-      // 偵測到 marker
-      marker.addEventListener('markerFound', () => {
-        showModel();
-      });
+      // ✅ 偵測到 marker
+      marker.addEventListener('markerFound', showModel);
 
-      // marker 消失 → 延遲隱藏
+      // ✅ marker 消失 → 延遲隱藏
       marker.addEventListener('markerLost', () => {
-        hideTimeout = setTimeout(() => {
-          hideModel();
-        }, 1000); // 延遲 1 秒再隱藏，避免閃爍
+        hideTimeout = setTimeout(hideModel, 1000); // 延遲 1 秒再隱藏
       });
     </script>
   </body>
