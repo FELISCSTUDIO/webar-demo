@@ -1,188 +1,46 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
+<html>
   <head>
-    <meta charset="utf-8" />
-    <title>WebAR with Smooth + Delay Hide</title>
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-        font-family: "Microsoft JhengHei", sans-serif;
-      }
-
-      /* Loading 畫面 */
-      #loading-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #4facfe, #00f2fe);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        z-index: 9999;
-        color: white;
-        font-size: 1.5em;
-        transition: opacity 0.5s ease;
-      }
-
-      .spinner {
-        border: 6px solid rgba(255, 255, 255, 0.3);
-        border-top: 6px solid #fff;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        animation: spin 1s linear infinite;
-        margin-bottom: 20px;
-      }
-
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-
-      /* 提示文字 */
-      #hint {
-        position: fixed;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0,0,0,0.6);
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 1.1em;
-        z-index: 2000;
-        animation: fadeInOut 3s ease-in-out infinite;
-      }
-
-      @keyframes fadeInOut {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-      }
-
-      /* SVG 外框層 */
-      #frame-svg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: 500;
-        pointer-events: none;
-      }
-    </style>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   </head>
   <body>
-    <!-- Loading 畫面 -->
-    <div id="loading-screen">
-      <div class="spinner"></div>
-      <div>正在載入 3D 模型，請稍候...</div>
-    </div>
+    <a-scene>
+      <!-- 相機（稍微後退，方便看模型） -->
+      <a-entity camera position="0 1.6 3"></a-entity>
 
-    <!-- SVG 外框 -->
-    <svg id="frame-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 285.75 508" preserveAspectRatio="none">
-      <g id="layer1">
-        <rect style="fill:#ffd5d5;" width="287.49677" height="50.923008" x="-1.68" y="-1.12" />
-        <rect style="fill:#ffd5d5;" width="287.49677" height="50.923008" x="-0.70" y="458.04" />
-        <rect style="fill:#ff8080;" width="154.7" height="51.9" x="67.18" y="428.06" />
-        <text style="font-size:32px;fill:#ffd4d4;" x="87" y="442">捲捲可愛</text>
-      </g>
-    </svg>
+      <!-- 地板 -->
+      <a-plane rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
 
-    <!-- 提示文字 -->
-    <div id="hint">捲捲胖胖</div>
-
-    <!-- AR 場景 -->
-    <a-scene
-      embedded
-      arjs="trackingMethod: best; sourceType: webcam; detectionMode: mono_and_matrix;"
-    >
-      <!-- Marker -->
-      <a-marker
-        preset="hiro"
-        emitevents="true"
-        smooth="true"
-        smoothCount="12"
-        smoothTolerance="0.01"
-        smoothThreshold="5"
-        id="hiroMarker"
+      <!-- 樹模型 -->
+      <a-entity
+        id="treeModel"
+        gltf-model="models/tree.glb"
+        scale="0.5 0.5 0.5"
+        rotation="90 180 0"
+        position="0 0 0"
+        animation-mixer
+        animation="property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: 0 0.3 0"
       >
-        <a-entity
-          id="treeModel"
-          gltf-model="models/tree.glb"
-          scale="0.5 0.5 0.5"
-          rotation="90 -90 0"
-          position="0 0 0"
-          animation-mixer
-          animation="property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: 0 0.3 0"
-        >
-        </a-entity>
-      </a-marker>
+      </a-entity>
 
-      <!-- Camera -->
-      <a-entity camera></a-entity>
+      <!-- 輔助坐標軸（方便確認方向） -->
+      <a-entity axes-helper="size: 2"></a-entity>
     </a-scene>
 
     <script>
-      const marker = document.querySelector('#hiroMarker');
-      const model = document.querySelector('#treeModel');
-      const loadingScreen = document.querySelector('#loading-screen');
-      let hideTimeout;
+      // 方向鍵 & Q/E 旋轉控制
+      window.addEventListener("keydown", (e) => {
+        const model = document.querySelector("#treeModel");
+        let rot = Object.assign({}, model.getAttribute("rotation"));
 
-      // 一開始隱藏模型
-      model.setAttribute('visible', false);
+        if (e.key === "ArrowLeft")  rot.y -= 10;  // 左轉
+        if (e.key === "ArrowRight") rot.y += 10;  // 右轉
+        if (e.key === "ArrowUp")    rot.x -= 10;  // 向上仰
+        if (e.key === "ArrowDown")  rot.x += 10;  // 向下俯
+        if (e.key === "q")          rot.z -= 10;  // Z 軸逆時針
+        if (e.key === "e")          rot.z += 10;  // Z 軸順時針
 
-      // 模型載入完成後 -> 關閉 Loading 畫面
-      model.addEventListener("model-loaded", () => {
-        console.log("模型載入完成");
-        loadingScreen.style.opacity = "0";
-        setTimeout(() => loadingScreen.style.display = "none", 600);
-      });
-
-      function showModel() {
-        clearTimeout(hideTimeout);
-        if (!model.getAttribute('visible')) {
-          model.setAttribute('visible', true);
-          console.log('模型顯示');
-        }
-      }
-
-      function hideModel() {
-        if (model.getAttribute('visible')) {
-          model.setAttribute('visible', false);
-          console.log('模型隱藏');
-        }
-      }
-
-      marker.addEventListener('markerFound', showModel);
-      marker.addEventListener('markerLost', () => {
-        hideTimeout = setTimeout(hideModel, 1000);
-      });
-
-      // 🔥 鍵盤旋轉控制
-      let rotation = { x: 90, y: -90, z: 0 }; // 初始值跟 entity 一樣
-      document.addEventListener('keydown', (e) => {
-        switch (e.key) {
-          case 'ArrowUp':
-            rotation.x -= 5; break; // 往上
-          case 'ArrowDown':
-            rotation.x += 5; break; // 往下
-          case 'ArrowLeft':
-            rotation.y -= 5; break; // 左轉
-          case 'ArrowRight':
-            rotation.y += 5; break; // 右轉
-          case 'q':
-            rotation.z -= 5; break; // Z 軸逆時針
-          case 'e':
-            rotation.z += 5; break; // Z 軸順時針
-        }
-        model.setAttribute('rotation', `${rotation.x} ${rotation.y} ${rotation.z}`);
-        console.log('目前 rotation:', rotation);
+        model.setAttribute("rotation", `${rot.x} ${rot.y} ${rot.z}`);
+        console.log("rotation:", rot);
       });
     </script>
   </body>
