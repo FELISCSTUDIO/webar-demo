@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1080"
+   height="1920"
+   viewBox="0 0 285.74999 508"
+   version="1.1"
+   id="svg1"
+   inkscape:export-filename="BG.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.48119037"
+     inkscape:cx="295.1015"
+     inkscape:cy="817.76366"
+     inkscape:window-width="1792"
+     inkscape:window-height="946"
+     inkscape:window-x="0"
+     inkscape:window-y="44"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1">
+    <inkscape:page
+       x="0"
+       y="0"
+       width="285.75"
+       height="508"
+       id="page2"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="圖層 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffd5d5;stroke-width:19.1694;stroke-linecap:square"
+       id="rect1"
+       width="287.49677"
+       height="50.923008"
+       x="-1.6858945"
+       y="-1.1239296" />
+    <rect
+       style="fill:#ffd5d5;stroke-width:19.1694;stroke-linecap:square"
+       id="rect1-9"
+       width="287.49677"
+       height="50.923008"
+       x="-0.70703161"
+       y="458.04077" />
+    <rect
+       style="fill:#ffd5d5;stroke-width:22.3567;stroke-linecap:square"
+       id="rect1-9-2"
+       width="494.83267"
+       height="40.243237"
+       x="9.4845104"
+       y="-285.48715"
+       transform="matrix(0.00105052,0.99999945,-0.99999516,0.00311209,0,0)" />
+    <rect
+       style="fill:#ffd5d5;stroke-width:22.3567;stroke-linecap:square"
+       id="rect1-9-2-7"
+       width="494.83267"
+       height="40.243237"
+       x="10.45767"
+       y="-40.021164"
+       transform="matrix(0.00105052,0.99999945,-0.99999516,0.00311209,0,0)" />
+    <rect
+       style="fill:#ff8080;stroke-width:60.8981;stroke-linecap:square"
+       id="rect3"
+       width="154.70169"
+       height="51.918198"
+       x="67.184807"
+       y="428.0621" />
+    <text
+       xml:space="preserve"
+       style="font-size:32.0642px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ff8080;stroke-width:304.474;stroke-linecap:square"
+       x="87.052063"
+       y="442.0806"
+       id="text3"
+       transform="scale(0.94646367,1.0565646)"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         style="font-size:32.0642px;fill:#ffd4d4;fill-opacity:1;stroke-width:304.474"
+         x="87.052063"
+         y="442.0806">捲捲可愛</tspan></text>
+    <rect
+       style="fill:#ff8080;fill-opacity:1;stroke-width:61.7984;stroke-linecap:square"
+       id="rect5"
+       width="4.2573333"
+       height="424.39575"
+       x="248.32335"
+       y="41.787487" />
+    <rect
+       style="fill:#ff8080;fill-opacity:1;stroke-width:61.7984;stroke-linecap:square"
+       id="rect5-4"
+       width="4.2573333"
+       height="424.39575"
+       x="33.008163"
+       y="41.178467" />
+    <rect
+       style="fill:#ff8080;fill-opacity:1;stroke-width:57.2492;stroke-linecap:square"
+       id="rect6"
+       width="219.27122"
+       height="6.3640318"
+       x="33.171803"
+       y="40.257904" />
+    <rect
+       style="fill:#ff8080;fill-opacity:1;stroke-width:22.1615;stroke-linecap:square"
+       id="rect6-6"
+       width="32.858273"
+       height="6.3640318"
+       x="219.3349"
+       y="461.49274" />
+    <rect
+       style="fill:#ff8080;fill-opacity:1;stroke-width:22.9667;stroke-linecap:square"
+       id="rect6-6-3"
+       width="35.289234"
+       height="6.3640318"
+       x="33.214214"
+       y="461.57034" />
+  </g>
+</svg>
