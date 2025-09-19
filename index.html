@@ -13,14 +13,19 @@ html
     <a-scene embedded arjs>
       <!-- Hiro marker -->
       <a-marker preset="hiro">
+        <!-- 如果 tree.glb 有內建動畫，animation-mixer 會自動播放 -->
+        <!-- 如果沒有動畫，下方的 animation 會讓它上下擺動 -->
         <a-entity
           gltf-model="models/tree.glb"
           scale="0.5 0.5 0.5"
-          rotation="90 0 90"
+          rotation="0 180 0"
           position="0 0 0"
-          animation-mixer>
+          animation-mixer
+          animation="property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: 0 0.3 0">
         </a-entity>
       </a-marker>
+
+      <!-- 相機 -->
       <a-entity camera></a-entity>
     </a-scene>
   </body>
