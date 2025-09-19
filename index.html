@@ -56,7 +56,7 @@
         padding: 10px 20px;
         border-radius: 8px;
         font-size: 1.1em;
-        z-index: 2000; /* ✅ 提示文字層級最大，永遠在最上 */
+        z-index: 2000;
         animation: fadeInOut 3s ease-in-out infinite;
       }
 
@@ -66,15 +66,15 @@
       }
 
       /* SVG 外框層 */
-#frame-svg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 500;   /* ✅ 低於提示文字 */
-  pointer-events: none;
-}
+      #frame-svg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 500;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
@@ -84,36 +84,16 @@
       <div>正在載入 3D 模型，請稍候...</div>
     </div>
 
-    <!-- SVG 外框 (整合 BG.svg 的內容) -->
+    <!-- SVG 外框 -->
     <svg id="frame-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 285.75 508" preserveAspectRatio="none">
-      <defs id="defs1" />
       <g id="layer1">
-        <rect style="fill:#ffd5d5;stroke-width:19.1694;stroke-linecap:square"
-              width="287.49677" height="50.923008" x="-1.6858945" y="-1.1239296" />
-        <rect style="fill:#ffd5d5;stroke-width:19.1694;stroke-linecap:square"
-              width="287.49677" height="50.923008" x="-0.70703161" y="458.04077" />
-        <rect style="fill:#ffd5d5;stroke-width:22.3567;stroke-linecap:square"
-              width="494.83267" height="40.243237" x="9.4845104" y="-285.48715"
-              transform="matrix(0.00105052,0.99999945,-0.99999516,0.00311209,0,0)" />
-        <rect style="fill:#ffd5d5;stroke-width:22.3567;stroke-linecap:square"
-              width="494.83267" height="40.243237" x="10.45767" y="-40.021164"
-              transform="matrix(0.00105052,0.99999945,-0.99999516,0.00311209,0,0)" />
-        <rect style="fill:#ff8080;stroke-width:60.8981;stroke-linecap:square"
-              width="154.70169" height="51.918198" x="67.184807" y="428.0621" />
-        <text style="font-size:32.0642px;fill:#ffd4d4;fill-opacity:1;stroke-width:304.474"
-              x="87.052063" y="442.0806" transform="scale(0.94646367,1.0565646)">捲捲可愛</text>
-        <rect style="fill:#ff8080;fill-opacity:1;stroke-width:61.7984;stroke-linecap:square"
-              width="4.2573333" height="424.39575" x="248.32335" y="41.787487" />
-        <rect style="fill:#ff8080;fill-opacity:1;stroke-width:61.7984;stroke-linecap:square"
-              width="4.2573333" height="424.39575" x="33.008163" y="41.178467" />
-        <rect style="fill:#ff8080;fill-opacity:1;stroke-width:57.2492;stroke-linecap:square"
-              width="219.27122" height="6.3640318" x="33.171803" y="40.257904" />
-        <rect style="fill:#ff8080;fill-opacity:1;stroke-width:22.1615;stroke-linecap:square"
-              width="32.858273" height="6.3640318" x="219.3349" y="461.49274" />
-        <rect style="fill:#ff8080;fill-opacity:1;stroke-width:22.9667;stroke-linecap:square"
-              width="35.289234" height="6.3640318" x="33.214214" y="461.57034" />
+        <rect style="fill:#ffd5d5;" width="287.49677" height="50.923008" x="-1.68" y="-1.12" />
+        <rect style="fill:#ffd5d5;" width="287.49677" height="50.923008" x="-0.70" y="458.04" />
+        <rect style="fill:#ff8080;" width="154.7" height="51.9" x="67.18" y="428.06" />
+        <text style="font-size:32px;fill:#ffd4d4;" x="87" y="442">捲捲可愛</text>
       </g>
     </svg>
+
     <!-- 提示文字 -->
     <div id="hint">捲捲胖胖</div>
 
@@ -182,6 +162,27 @@
       marker.addEventListener('markerFound', showModel);
       marker.addEventListener('markerLost', () => {
         hideTimeout = setTimeout(hideModel, 1000);
+      });
+
+      // 🔥 鍵盤旋轉控制
+      let rotation = { x: 90, y: -90, z: 0 }; // 初始值跟 entity 一樣
+      document.addEventListener('keydown', (e) => {
+        switch (e.key) {
+          case 'ArrowUp':
+            rotation.x -= 5; break; // 往上
+          case 'ArrowDown':
+            rotation.x += 5; break; // 往下
+          case 'ArrowLeft':
+            rotation.y -= 5; break; // 左轉
+          case 'ArrowRight':
+            rotation.y += 5; break; // 右轉
+          case 'q':
+            rotation.z -= 5; break; // Z 軸逆時針
+          case 'e':
+            rotation.z += 5; break; // Z 軸順時針
+        }
+        model.setAttribute('rotation', `${rotation.x} ${rotation.y} ${rotation.z}`);
+        console.log('目前 rotation:', rotation);
       });
     </script>
   </body>
