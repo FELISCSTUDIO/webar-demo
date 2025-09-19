@@ -1,8 +1,7 @@
-html
 <!DOCTYPE html>
 <html>
   <head>
-    <title>WebAR with Blender Animation</title>
+    <title>WebAR with Smooth + Delay Hide</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
@@ -10,16 +9,25 @@ html
     </style>
   </head>
   <body>
-    <a-scene embedded arjs>
-      <!-- Hiro marker -->
-      <a-marker preset="hiro">
-        <!-- 如果 tree.glb 有內建動畫，animation-mixer 會自動播放 -->
-        <!-- 如果沒有動畫，下方的 animation 會讓它上下擺動 -->
-        <a-entity
+    <a-scene embedded arjs="trackingMethod: best; sourceType: webcam; detectionMode: mono_and_matrix;">
+      
+      <!-- Hiro marker with smooth settings -->
+      <a-marker 
+        preset="hiro" 
+        emitevents="true" 
+        smooth="true" 
+        smoothCount="10" 
+        smoothTolerance="0.01" 
+        smoothThreshold="5"
+        id="hiroMarker">
+
+        <a-entity 
+          id="treeModel"
           gltf-model="models/tree.glb"
           scale="0.5 0.5 0.5"
-          rotation="0 180 0"
+          rotation="0 0 0"
           position="0 0 0"
+          visible="false"   <!-- 一開始先隱藏 -->
           animation-mixer
           animation="property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: 0 0.3 0">
         </a-entity>
@@ -28,5 +36,25 @@ html
       <!-- 相機 -->
       <a-entity camera></a-entity>
     </a-scene>
+
+    <script>
+      const marker = document.querySelector('#hiroMarker');
+      const model = document.querySelector('#treeModel');
+      let hideTimeout;
+
+      // 當偵測到 marker
+      marker.addEventListener('markerFound', () => {
+        clearTimeout(hideTimeout);
+        model.setAttribute('visible', true);
+      });
+
+      // 當 marker 消失
+      marker.addEventListener('markerLost', () => {
+        // 延遲 500ms 再隱藏，避免抖動造成的閃爍
+        hideTimeout = setTimeout(() => {
+          model.setAttribute('visible', false);
+        }, 500);
+      });
+    </script>
   </body>
 </html>
