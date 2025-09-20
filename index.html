@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
-    <title>WebAR with Smooth + Delay Hide</title>
+    <title>WebAR with Intro + Loading</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
@@ -14,7 +14,46 @@
         margin: 0;
         overflow: hidden;
         font-family: "Microsoft JhengHei", sans-serif;
-        height: calc(var(--vh) * 100); /* ✅ 使用修正後的 vh 高度 */
+        height: calc(var(--vh) * 100);
+      }
+
+      /* Intro 封面畫面 */
+      #intro-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: calc(var(--vh) * 100);
+        background: url("images/heart.jpg") no-repeat center center;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 10000;
+        color: white;
+        text-align: center;
+      }
+
+      #intro-screen h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+      }
+
+      #start-btn {
+        padding: 12px 30px;
+        font-size: 1.2em;
+        border: none;
+        border-radius: 8px;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      #start-btn:hover {
+        background: rgba(0,0,0,0.8);
       }
 
       /* Loading 畫面 */
@@ -23,7 +62,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: calc(var(--vh) * 100); /* ✅ 修正高度 */
+        height: calc(var(--vh) * 100);
         background: linear-gradient(135deg, #4facfe, #00f2fe);
         display: flex;
         justify-content: center;
@@ -33,6 +72,7 @@
         color: white;
         font-size: 1.5em;
         transition: opacity 0.5s ease;
+        display: none; /* 預設隱藏，等進入體驗後再顯示 */
       }
 
       .spinner {
@@ -55,14 +95,15 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: calc(var(--vh) * 5 + 200px); /* 保留 5% 空間，再加 60px 外框高度 */
+        bottom: calc(var(--vh) * 5 + 200px);
         background: rgba(0,0,0,0.6);
         color: #fff;
         padding: 10px 20px;
         border-radius: 8px;
         font-size: 1.1em;
-        z-index: 2000; 
+        z-index: 2000;
         animation: fadeInOut 3s ease-in-out infinite;
+        display: none; /* 開場時先隱藏 */
       }
 
       @keyframes fadeInOut {
@@ -76,13 +117,20 @@
         top: 0;
         left: 0;
         width: 100vw;
-        height: calc(var(--vh) * 100); /* ✅ 修正高度 */
-        z-index: 500;   
+        height: calc(var(--vh) * 100);
+        z-index: 500;
         pointer-events: none;
+        display: none; /* 進場後才顯示 */
       }
     </style>
   </head>
   <body>
+    <!-- Intro 全螢幕封面 -->
+    <div id="intro-screen">
+      <h1>歡迎進入捲捲的 AR 體驗</h1>
+      <button id="start-btn">開始體驗</button>
+    </div>
+
     <!-- Loading 畫面 -->
     <div id="loading-screen">
       <div class="spinner"></div>
@@ -114,9 +162,10 @@
 
     <!-- AR 場景 -->
     <a-scene
+      id="ar-scene"
       embedded
       arjs="trackingMethod: best; sourceType: webcam; detectionMode: mono_and_matrix;"
-      style="height: calc(var(--vh) * 100);"
+      style="height: calc(var(--vh) * 100); display:none;"
     >
       <!-- Marker -->
       <a-marker
@@ -153,9 +202,14 @@
       window.addEventListener('orientationchange', setVh);
       setVh();
 
+      const introScreen = document.getElementById("intro-screen");
+      const startBtn = document.getElementById("start-btn");
+      const arScene = document.getElementById("ar-scene");
+      const frameSvg = document.getElementById("frame-svg");
+      const hint = document.getElementById("hint");
+      const loadingScreen = document.getElementById("loading-screen");
       const marker = document.querySelector('#hiroMarker');
       const model = document.querySelector('#treeModel');
-      const loadingScreen = document.querySelector('#loading-screen');
       let hideTimeout;
 
       // 一開始隱藏模型
@@ -165,7 +219,11 @@
       model.addEventListener("model-loaded", () => {
         console.log("模型載入完成");
         loadingScreen.style.opacity = "0";
-        setTimeout(() => loadingScreen.style.display = "none", 600);
+        setTimeout(() => {
+          loadingScreen.style.display = "none";
+          hint.style.display = "block"; // 顯示提示文字
+          frameSvg.style.display = "block"; // 顯示外框
+        }, 600);
       });
 
       function showModel() {
@@ -186,6 +244,13 @@
       marker.addEventListener('markerFound', showModel);
       marker.addEventListener('markerLost', () => {
         hideTimeout = setTimeout(hideModel, 1000);
+      });
+
+      // ⚡ 點擊開始體驗
+      startBtn.addEventListener("click", () => {
+        introScreen.style.display = "none";       // 隱藏 intro
+        loadingScreen.style.display = "flex";     // 顯示 loading
+        arScene.style.display = "block";          // 顯示 AR Scene (觸發相機權限)
       });
     </script>
   </body>
