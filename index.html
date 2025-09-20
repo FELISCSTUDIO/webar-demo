@@ -2,12 +2,12 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
-    <title>WebAR with Intro + Loading</title>
+    <title>WebAR with Smooth + Delay Hide</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
       :root {
-        --vh: 1vh; /* 動態視窗高度單位 */
+        --vh: 1vh;
       }
 
       body {
@@ -17,7 +17,7 @@
         height: calc(var(--vh) * 100);
       }
 
-      /* Intro 封面畫面 */
+      /* ✅ 進場導覽畫面 (用 cover.jpg 當背景) */
       #intro-screen {
         position: fixed;
         top: 0;
@@ -25,35 +25,55 @@
         width: 100%;
         height: calc(var(--vh) * 100);
         background: url("images/heart.jpg") no-repeat center center;
-        background-size: cover;
+        background-size: cover;  /* 縮放鋪滿 */
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-        flex-direction: column;
         z-index: 10000;
-        color: white;
         text-align: center;
+        color: #fff;
       }
 
-      #intro-screen h1 {
-        font-size: 2em;
-        margin-bottom: 20px;
-        text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+      #intro-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4); /* 半透明黑幕，讓文字更清楚 */
+        z-index: 1;
+      }
+
+      #intro-content {
+        position: relative;
+        z-index: 2; /* 確保在 overlay 上方 */
+      }
+
+      #intro-content h1 {
+        font-size: 2.2em;
+        margin-bottom: 15px;
+      }
+
+      #intro-content p {
+        font-size: 1.2em;
+        margin-bottom: 30px;
       }
 
       #start-btn {
-        padding: 12px 30px;
-        font-size: 1.2em;
+        background: #ff6b81;
         border: none;
-        border-radius: 8px;
-        background: rgba(0,0,0,0.6);
+        padding: 15px 40px;
+        border-radius: 30px;
+        font-size: 1.2em;
         color: #fff;
         cursor: pointer;
-        transition: background 0.3s;
+        transition: all 0.3s ease;
       }
 
       #start-btn:hover {
-        background: rgba(0,0,0,0.8);
+        background: #ff4757;
+        transform: scale(1.05);
       }
 
       /* Loading 畫面 */
@@ -72,7 +92,7 @@
         color: white;
         font-size: 1.5em;
         transition: opacity 0.5s ease;
-        display: none; /* 預設隱藏，等進入體驗後再顯示 */
+        display: none; /* 預設隱藏 */
       }
 
       .spinner {
@@ -95,7 +115,7 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: calc(var(--vh) * 5 + 200px);
+        bottom: calc(var(--vh) * 5 + 200px); /* 保留空間，避免壓到底部外框 */
         background: rgba(0,0,0,0.6);
         color: #fff;
         padding: 10px 20px;
@@ -103,7 +123,7 @@
         font-size: 1.1em;
         z-index: 2000;
         animation: fadeInOut 3s ease-in-out infinite;
-        display: none; /* 開場時先隱藏 */
+        display: none; /* 一開始隱藏 */
       }
 
       @keyframes fadeInOut {
@@ -111,7 +131,7 @@
         50% { opacity: 0.5; }
       }
 
-      /* SVG 外框層 */
+      /* SVG 外框 */
       #frame-svg {
         position: fixed;
         top: 0;
@@ -120,15 +140,19 @@
         height: calc(var(--vh) * 100);
         z-index: 500;
         pointer-events: none;
-        display: none; /* 進場後才顯示 */
+        display: none;
       }
     </style>
   </head>
   <body>
-    <!-- Intro 全螢幕封面 -->
+    <!-- ✅ 進場導覽畫面 -->
     <div id="intro-screen">
-      <h1>歡迎進入捲捲的 AR 體驗</h1>
-      <button id="start-btn">開始體驗</button>
+      <div id="intro-overlay"></div>
+      <div id="intro-content">
+        <h1>捲捲公主請上車</h1>
+        <p>請點擊下方按鈕，並允許使用相機</p>
+        <button id="start-btn">來囉來囉</button>
+      </div>
     </div>
 
     <!-- Loading 畫面 -->
@@ -140,43 +164,21 @@
     <!-- SVG 外框 -->
     <svg id="frame-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 285.75 508" preserveAspectRatio="none">
       <g id="layer1">
-        <rect style="fill:#ffd5d5;" width="287.5" height="50.9" x="-1.7" y="-1.1" />
-        <rect style="fill:#ffd5d5;" width="287.5" height="50.9" x="-0.7" y="458" />
-        <rect style="fill:#ffd5d5;" width="494.8" height="40.2" x="9.5" y="-285.5"
-              transform="matrix(0.00105,0.999999,-0.999995,0.003112,0,0)" />
-        <rect style="fill:#ffd5d5;" width="494.8" height="40.2" x="10.5" y="-40"
-              transform="matrix(0.00105,0.999999,-0.999995,0.003112,0,0)" />
-        <rect style="fill:#ff8080;" width="154.7" height="51.9" x="67.2" y="428" />
-        <text style="font-size:32px;fill:#ffd4d4;"
-              x="87" y="442" transform="scale(0.95,1.06)">捲捲可愛</text>
-        <rect style="fill:#ff8080;" width="4.25" height="424.4" x="248.3" y="41.8" />
-        <rect style="fill:#ff8080;" width="4.25" height="424.4" x="33" y="41.2" />
-        <rect style="fill:#ff8080;" width="219.3" height="6.36" x="33.2" y="40.3" />
-        <rect style="fill:#ff8080;" width="32.9" height="6.36" x="219.3" y="461.5" />
-        <rect style="fill:#ff8080;" width="35.3" height="6.36" x="33.2" y="461.6" />
+        <!-- 你的外框內容 -->
       </g>
     </svg>
 
     <!-- 提示文字 -->
-    <div id="hint">捲捲公主請上車</div>
+    <div id="hint">捲捲胖胖</div>
 
     <!-- AR 場景 -->
     <a-scene
       id="ar-scene"
       embedded
       arjs="trackingMethod: best; sourceType: webcam; detectionMode: mono_and_matrix;"
-      style="height: calc(var(--vh) * 100); display:none;"
+      style="display:none; height: calc(var(--vh) * 100);"
     >
-      <!-- Marker -->
-      <a-marker
-        preset="hiro"
-        emitevents="true"
-        smooth="true"
-        smoothCount="12"
-        smoothTolerance="0.01"
-        smoothThreshold="5"
-        id="hiroMarker"
-      >
+      <a-marker preset="hiro" emitevents="true" smooth="true" smoothCount="12" smoothTolerance="0.01" smoothThreshold="5" id="hiroMarker">
         <a-entity
           id="treeModel"
           gltf-model="models/tree.glb"
@@ -184,17 +186,13 @@
           rotation="90 180 0"
           position="0 0 0"
           animation-mixer
-          animation="property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: 0 0.3 0"
-        >
+          animation="property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: 0 0.3 0">
         </a-entity>
       </a-marker>
-
-      <!-- Camera -->
       <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-      // ✅ 動態 vh 設定，避免被瀏覽器工具列擋住
       function setVh() {
         document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
       }
@@ -202,27 +200,32 @@
       window.addEventListener('orientationchange', setVh);
       setVh();
 
-      const introScreen = document.getElementById("intro-screen");
-      const startBtn = document.getElementById("start-btn");
-      const arScene = document.getElementById("ar-scene");
-      const frameSvg = document.getElementById("frame-svg");
-      const hint = document.getElementById("hint");
-      const loadingScreen = document.getElementById("loading-screen");
+      const introScreen = document.querySelector('#intro-screen');
+      const startBtn = document.querySelector('#start-btn');
+      const arScene = document.querySelector('#ar-scene');
+      const frameSvg = document.querySelector('#frame-svg');
+      const hint = document.querySelector('#hint');
+      const loadingScreen = document.querySelector('#loading-screen');
       const marker = document.querySelector('#hiroMarker');
       const model = document.querySelector('#treeModel');
       let hideTimeout;
 
-      // 一開始隱藏模型
       model.setAttribute('visible', false);
 
-      // 模型載入完成後 -> 關閉 Loading 畫面
+      // ✅ 點擊開始 → 顯示 AR Scene
+      startBtn.addEventListener('click', () => {
+        introScreen.style.display = 'none';
+        loadingScreen.style.display = 'flex';
+        arScene.style.display = 'block';
+        frameSvg.style.display = 'block';
+      });
+
       model.addEventListener("model-loaded", () => {
         console.log("模型載入完成");
         loadingScreen.style.opacity = "0";
         setTimeout(() => {
           loadingScreen.style.display = "none";
-          hint.style.display = "block"; // 顯示提示文字
-          frameSvg.style.display = "block"; // 顯示外框
+          hint.style.display = "block";
         }, 600);
       });
 
@@ -244,13 +247,6 @@
       marker.addEventListener('markerFound', showModel);
       marker.addEventListener('markerLost', () => {
         hideTimeout = setTimeout(hideModel, 1000);
-      });
-
-      // ⚡ 點擊開始體驗
-      startBtn.addEventListener("click", () => {
-        introScreen.style.display = "none";       // 隱藏 intro
-        loadingScreen.style.display = "flex";     // 顯示 loading
-        arScene.style.display = "block";          // 顯示 AR Scene (觸發相機權限)
       });
     </script>
   </body>
