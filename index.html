@@ -17,7 +17,7 @@
         height: calc(var(--vh) * 100);
       }
 
-      /* ✅ 進場導覽畫面 (用 cover.jpg 當背景) */
+      /* ✅ 進場導覽畫面 */
       #intro-screen {
         position: fixed;
         top: 0;
@@ -25,7 +25,7 @@
         width: 100%;
         height: calc(var(--vh) * 100);
         background: url("images/heart.jpg") no-repeat center center;
-        background-size: cover;  /* 縮放鋪滿 */
+        background-size: cover;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -41,13 +41,13 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.4); /* 半透明黑幕，讓文字更清楚 */
+        background: rgba(0, 0, 0, 0.4);
         z-index: 1;
       }
 
       #intro-content {
         position: relative;
-        z-index: 2; /* 確保在 overlay 上方 */
+        z-index: 2;
       }
 
       #intro-content h1 {
@@ -115,7 +115,7 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: calc(var(--vh) * 5 + 200px); /* 保留空間，避免壓到底部外框 */
+        bottom: calc(var(--vh) * 5 + 200px);
         background: rgba(0,0,0,0.6);
         color: #fff;
         padding: 10px 20px;
@@ -123,7 +123,7 @@
         font-size: 1.1em;
         z-index: 2000;
         animation: fadeInOut 3s ease-in-out infinite;
-        display: none; /* 一開始隱藏 */
+        display: none;
       }
 
       @keyframes fadeInOut {
@@ -140,7 +140,7 @@
         height: calc(var(--vh) * 100);
         z-index: 500;
         pointer-events: none;
-        display: none;
+        display: none; /* 一開始隱藏 */
       }
     </style>
   </head>
@@ -150,7 +150,7 @@
       <div id="intro-overlay"></div>
       <div id="intro-content">
         <h1>捲捲公主請上車</h1>
-        <p>請點擊下方按鈕，並允許使用相機</p>
+        <p>捲捲公主我們來，接妳了呦❤️</p>
         <button id="start-btn">來囉來囉</button>
       </div>
     </div>
@@ -164,7 +164,19 @@
     <!-- SVG 外框 -->
     <svg id="frame-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 285.75 508" preserveAspectRatio="none">
       <g id="layer1">
-        <!-- 你的外框內容 -->
+        <rect style="fill:#ffd5d5;" width="287.5" height="50.9" x="-1.7" y="-1.1" />
+        <rect style="fill:#ffd5d5;" width="287.5" height="50.9" x="-0.7" y="458" />
+        <rect style="fill:#ffd5d5;" width="494.8" height="40.2" x="9.5" y="-285.5"
+              transform="matrix(0.00105,0.999999,-0.999995,0.003112,0,0)" />
+        <rect style="fill:#ffd5d5;" width="494.8" height="40.2" x="10.5" y="-40"
+              transform="matrix(0.00105,0.999999,-0.999995,0.003112,0,0)" />
+        <rect style="fill:#ff8080;" width="154.7" height="51.9" x="67.2" y="428" />
+        <text style="font-size:32px;fill:#ffd4d4;" x="87" y="442" transform="scale(0.95,1.06)">捲捲可愛</text>
+        <rect style="fill:#ff8080;" width="4.25" height="424.4" x="248.3" y="41.8" />
+        <rect style="fill:#ff8080;" width="4.25" height="424.4" x="33" y="41.2" />
+        <rect style="fill:#ff8080;" width="219.3" height="6.36" x="33.2" y="40.3" />
+        <rect style="fill:#ff8080;" width="32.9" height="6.36" x="219.3" y="461.5" />
+        <rect style="fill:#ff8080;" width="35.3" height="6.36" x="33.2" y="461.6" />
       </g>
     </svg>
 
@@ -217,7 +229,7 @@
         introScreen.style.display = 'none';
         loadingScreen.style.display = 'flex';
         arScene.style.display = 'block';
-        frameSvg.style.display = 'block';
+        frameSvg.style.display = 'block'; // 顯示外框
       });
 
       model.addEventListener("model-loaded", () => {
